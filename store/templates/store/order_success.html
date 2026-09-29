@@ -1,0 +1,49 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Order Confirmed — Veylora{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 2rem auto; background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 3rem 2.5rem; text-align: center; box-shadow: var(--shadow-md);">
+  <div style="width: 5rem; height: 5rem; background-color: var(--success-light); color: var(--success); border-radius: 9999px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+  </div>
+
+  <h1 style="font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem;">Thank You for Your Order!</h1>
+  <p style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 2rem;">
+    Your order has been placed successfully and is now being processed.
+  </p>
+
+  <div style="background-color: var(--bg-alt); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; text-align: left; margin-bottom: 2.5rem;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+      <span style="color: var(--text-muted);">Order Number:</span>
+      <strong style="color: var(--primary);">{{ order.order_number }}</strong>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+      <span style="color: var(--text-muted);">Order Date:</span>
+      <strong>{{ order.created_at|date:"F d, Y, h:i A" }}</strong>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+      <span style="color: var(--text-muted);">Status:</span>
+      <span class="status-badge status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 0.75rem; margin-top: 0.75rem;">
+      <span style="color: var(--text-muted);">Total Paid:</span>
+      <strong style="font-size: 1.15rem; color: var(--text-main);">${{ order.total }}</strong>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+    <a href="{% url 'store:order_detail' order.order_number %}" class="btn btn-primary btn-md">
+      View Order Details &amp; Receipt
+    </a>
+    <a href="{% url 'store:orders' %}" class="btn btn-secondary btn-md">
+      View All Orders
+    </a>
+    <a href="{% url 'store:product_list' %}" class="btn btn-outline btn-md">
+      Continue Shopping
+    </a>
+  </div>
+</div>
+{% endblock %}

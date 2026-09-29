@@ -1,0 +1,91 @@
+# Walkthrough — Phase 0 & Phase 1 Completed
+
+We have successfully set up the foundational project architecture (**Phase 0**) and implemented all core database models and migrations (**Phase 1**) according to `prd.md`, `architecture.md`, `rules.md`, `design.md`, and `tasks.md`.
+
+## Changes Summary
+
+### Phase 0: Project Setup
+- **Environment & Dependencies**:
+  - [requirements.txt](file:///c:/Users/LENOVO/OneDrive/Desktop/ecommaecestore/requirements.txt): Configured `Django>=5.0,<6.0`, `Pillow>=10.0.0`, and `python-dotenv>=1.0.0`.
+  - [.env.example](file:///c:/Users/LENOVO/OneDrive/Desktop/ecommaecestore/.env.example) and [.env](file:///c:/Users/LENOVO/OneDrive/Desktop/ecommaecestore/.env): Environment variables for secret key, debug mode, and allowed hosts.
+  - [.gitignore](file:///c:/Users/LENOVO/OneDrive/Desktop/ecommaecestore/.gitignore): Comprehensive ignore rules for Python, `.venv/`, SQLite database, media, and cache files.
+  - [README.md](file:///c:/Users/LENOVO/OneDrive/Desktop/ecommaecestore/README.md): Complete setup and run instructions.
+- **Django Configuration (`config/`)**:
+  - [config/settings.py](file:///c:/Users/LENOVO/OneDrive/Desktop/ecommaecestore/config/settings.py): Loaded `.env` settings, registered `store.apps.StoreConfig`, configured templates directory, static files, and media roots.
+  - [config/urls.py](file:///c:/Users/LENOVO/OneDrive/Desktop/ecommaecestore/config/urls.py): Configured admin route, store app routing, and media/static serving in development.
+- **Store Application Foundation (`store/`)**:
+  - [store/urls.py](file:///c:/Users/LENOVO/OneDrive/Desktop/ecommaecestore/store/urls.py) and [store/views.py](file:///c:/Users/LENOVO/OneDrive/Desktop/ecommaecestore/store/views.py): Initial app routing.
+  - [store/static/store/css/style.css](file:///c:/Users/LENOVO/OneDrive/Desktop/ecommaecestore/store/static/store/css/style.css): Design system tokens and baseline reset.
+  - [store/static/store/js/app.js](file:///c:/Users/LENOVO/OneDrive/Desktop/ecommaecestore/store/static/store/js/app.js): Client-side script initialization.
+  - `media/products/`: Directory for uploaded product images.
+
+---
+
+### Phase 1: Database Models & Migrations
+- **Models ([store/models.py](file:///c:/Users/LENOVO/OneDrive/Desktop/ecommaecestore/store/models.py))**:
+  - `Category`: `name`, `slug` (auto-generated with collision fallback), `description`, `created_at`.
+  - `Product`: `category` (FK), `name`, `slug` (auto-generated), `description`, `price` (DecimalField), `old_price` (DecimalField, nullable), `image`, `stock`, `is_active`, `created_at`, `updated_at`, helper properties (`is_in_stock`, `has_discount`, `discount_percent`).
+  - `Order`: `order_number` (auto-generated unique code: `ORD-YYYYMMDD-HEX`), `user` (FK), `full_name`, `email`, `phone`, `address`, `city`, `state`, `pincode`, `subtotal`, `shipping`, `total`, `status` (choices: Pending, Confirmed, Processing, Shipped, Delivered, Cancelled), `created_at`, `updated_at`.
+  - `OrderItem`: `order` (FK), `product` (FK, `SET_NULL` on delete so order history survives product removal), `product_name_snapshot`, `price_snapshot`, `quantity`, `subtotal`.
+- **Admin Configuration ([store/admin.py](file:///c:/Users/LENOVO/OneDrive/Desktop/ecommaecestore/store/admin.py))**:
+  - Registered `CategoryAdmin`, `ProductAdmin`, `OrderAdmin` (with inline `OrderItemInline`), and `OrderItemAdmin`.
+- **Database Migrations**:
+  - Generated and applied `store/migrations/0001_initial.py`.
+
+---
+
+## Verification & Test Results
+
+### 1. System Check
+```bash
+python manage.py check
+```
+Result: **System check identified no issues (0 silenced).**
+
+### 2. Automated Model Unit Tests
+```bash
+python manage.py test
+```
+Result:
+```text
+Creating test database for alias 'default'...
+....
+----------------------------------------------------------------------
+Ran 4 tests in 2.063s
+
+OK
+```
+Tests verified:
+- Automatic slug generation and collision handling.
+- Discount calculation and stock status helpers.
+- Unique order number generation and OrderItem subtotal calculation.
+- OrderItem persistence and snapshot preservation when a Product is deleted.
+
+---
+
+## How to Run the Project
+
+1. **Activate Virtual Environment**:
+   - Windows PowerShell:
+     ```powershell
+     .\.venv\Scripts\Activate.ps1
+     ```
+   - Windows CMD:
+     ```cmd
+     .\.venv\Scripts\activate.bat
+     ```
+2. **Run Migrations** (if new changes):
+   ```bash
+   python manage.py migrate
+   ```
+3. **Create Superuser** (for Django Admin):
+   ```bash
+   python manage.py createsuperuser
+   ```
+4. **Start Development Server**:
+   ```bash
+   python manage.py runserver
+   ```
+   Access at:
+   - Store: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+   - Admin: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)

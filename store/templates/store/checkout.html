@@ -1,0 +1,155 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}Checkout — Veylora{% endblock %}
+
+{% block content %}
+<h1 style="font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 2rem;">Secure Checkout</h1>
+
+<div class="checkout-layout">
+  <!-- Left: Shipping & Customer Information Form -->
+  <div style="background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 2rem; box-shadow: var(--shadow-sm);">
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+        <circle cx="12" cy="10" r="3"></circle>
+      </svg>
+      Shipping Address & Contact
+    </h2>
+
+    <form method="post" action="{% url 'store:checkout' %}" id="checkoutForm">
+      {% csrf_token %}
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label for="id_full_name" class="form-label">Full Name *</label>
+          {{ form.full_name }}
+          {% if form.full_name.errors %}<div class="form-error">{{ form.full_name.errors|first }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_email" class="form-label">Email Address *</label>
+          {{ form.email }}
+          {% if form.email.errors %}<div class="form-error">{{ form.email.errors|first }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_phone" class="form-label">Phone Number *</label>
+        {{ form.phone }}
+        {% if form.phone.errors %}<div class="form-error">{{ form.phone.errors|first }}</div>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="id_address" class="form-label">Street Address *</label>
+        {{ form.address }}
+        {% if form.address.errors %}<div class="form-error">{{ form.address.errors|first }}</div>{% endif %}
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label for="id_city" class="form-label">City *</label>
+          {{ form.city }}
+          {% if form.city.errors %}<div class="form-error">{{ form.city.errors|first }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_state" class="form-label">State / Region *</label>
+          {{ form.state }}
+          {% if form.state.errors %}<div class="form-error">{{ form.state.errors|first }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_pincode" class="form-label">ZIP / Postal Code *</label>
+          {{ form.pincode }}
+          {% if form.pincode.errors %}<div class="form-error">{{ form.pincode.errors|first }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_order_notes" class="form-label">Order Notes (Optional)</label>
+        {{ form.order_notes }}
+      </div>
+
+      <!-- Payment Method Selection -->
+      <div style="margin-top: 2rem; padding: 1.25rem; background: var(--bg-alt); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+        <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+            <line x1="1" y1="10" x2="23" y2="10"></line>
+          </svg>
+          Payment Option
+        </h4>
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem;">
+          <input type="radio" id="payCod" name="payment_method" value="cod" checked style="accent-color: var(--primary);">
+          <label for="payCod" style="font-weight: 600; font-size: 0.95rem;">Cash on Delivery (Pay upon arrival)</label>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem; margin-left: 1.5rem;">
+          Pay with cash or digital payment upon order delivery.
+        </p>
+      </div>
+
+      <div style="margin-top: 2rem;">
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="placeOrderBtn">
+          Confirm & Place Order (${{ total }})
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Right: Order Review & Items Breakdown -->
+  <div class="summary-card">
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem;">Items in Your Order</h2>
+
+    <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; max-height: 320px; overflow-y: auto; padding-right: 0.5rem;">
+      {% for item in cart %}
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            {% if item.product.image %}
+              <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 3rem; height: 3rem; border-radius: var(--radius-sm); object-fit: cover;">
+            {% else %}
+              <div style="width: 3rem; height: 3rem; border-radius: var(--radius-sm); background: var(--bg-alt); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: var(--text-light);">
+                IMG
+              </div>
+            {% endif %}
+            <div>
+              <div style="font-weight: 600; font-size: 0.9rem;">{{ item.product.name }}</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Qty: {{ item.quantity }} &times; ${{ item.price }}</div>
+            </div>
+          </div>
+          <span style="font-weight: 700; font-size: 0.95rem;">${{ item.total_price }}</span>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Totals -->
+    <div class="summary-row">
+      <span>Subtotal</span>
+      <span style="font-weight: 600;">${{ subtotal }}</span>
+    </div>
+
+    <div class="summary-row">
+      <span>Shipping Fee</span>
+      <span style="font-weight: 600;">
+        {% if shipping == 0 %}
+          <span style="color: var(--success);">FREE</span>
+        {% else %}
+          ${{ shipping }}
+        {% endif %}
+      </span>
+    </div>
+
+    <div class="summary-row summary-total">
+      <span>Total Amount</span>
+      <span style="color: var(--primary); font-size: 1.4rem;">${{ total }}</span>
+    </div>
+
+    <div style="margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--success)">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      </svg>
+      <span>Transactions are secured with server-side inventory verification.</span>
+    </div>
+  </div>
+</div>
+{% endblock %}

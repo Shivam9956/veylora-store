@@ -1,0 +1,194 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}Veylora — Modern Online Shopping Experience{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" id="heroSection">
+  <div class="hero-content">
+    <span style="display: inline-block; background: rgba(255,255,255,0.2); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; letter-spacing: 0.05em; text-transform: uppercase;">New Season Arrivals</span>
+    <h1>Discover Premium Essentials Designed for Everyday Living</h1>
+    <p>Explore curated gadgets, modern accessories, and lifestyle essentials crafted with uncompromising quality and sleek aesthetics.</p>
+    <div class="hero-actions">
+      <a href="{% url 'store:product_list' %}" class="btn btn-primary btn-lg" style="background-color: #ffffff; color: var(--primary);">Explore Catalog</a>
+      <a href="{% url 'store:product_list' %}?sort=price_low" class="btn btn-outline btn-lg" style="color: #ffffff; border-color: rgba(255,255,255,0.4);">View Deals</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-badge-card">
+      <div style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.25rem;">100%</div>
+      <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem;">Authentic & Tested</div>
+      <p style="font-size: 0.85rem; opacity: 0.85;">Fast delivery right to your doorstep with guaranteed customer satisfaction.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Shop by Category Section -->
+{% if categories %}
+<section style="margin-bottom: 4rem;">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">Shop by Category</h2>
+      <p class="section-subtitle">Find exactly what you are looking for</p>
+    </div>
+    <a href="{% url 'store:product_list' %}" class="btn btn-secondary btn-sm">View All Categories &rarr;</a>
+  </div>
+
+  <div class="category-grid">
+    {% for cat in categories %}
+      <a href="{% url 'store:product_list_by_category' cat.slug %}" class="category-card">
+        <div class="category-icon">
+          {% if 'Audio' in cat.name %}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+          {% elif 'Electronics' in cat.name %}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          {% elif 'Apparel' in cat.name %}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path></svg>
+          {% elif 'Home' in cat.name %}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          {% else %}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+          {% endif %}
+        </div>
+        <span class="category-name">{{ cat.name }}</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- Featured Products Section -->
+<section style="margin-bottom: 4rem;">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">Featured Products</h2>
+      <p class="section-subtitle">Top-rated items handpicked for you</p>
+    </div>
+    <a href="{% url 'store:product_list' %}" class="btn btn-secondary btn-sm">Browse All &rarr;</a>
+  </div>
+
+  {% if featured_products %}
+    <div class="products-grid">
+      {% for product in featured_products %}
+        <div class="product-card">
+          <div class="product-image-wrap">
+            {% if product.has_discount %}
+              <span class="product-badge">-{{ product.discount_percent }}% OFF</span>
+            {% endif %}
+            
+            <a href="{% url 'store:product_detail' product.slug %}" style="width: 100%; height: 100%; display: block;">
+              {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" loading="lazy">
+              {% else %}
+                <div class="product-placeholder-img">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                  <span>{{ product.name|truncatechars:20 }}</span>
+                </div>
+              {% endif %}
+            </a>
+          </div>
+
+          <div class="product-body">
+            <span class="product-category-tag">{{ product.category.name }}</span>
+            <h3 class="product-title">
+              <a href="{% url 'store:product_detail' product.slug %}">{{ product.name }}</a>
+            </h3>
+            <p class="product-desc">{{ product.description|truncatewords:12 }}</p>
+
+            <div class="product-footer">
+              <div class="price-wrap">
+                <span class="price-current">${{ product.price }}</span>
+                {% if product.old_price %}
+                  <span class="price-old">${{ product.old_price }}</span>
+                {% endif %}
+              </div>
+
+              {% if product.is_in_stock %}
+                <form method="post" action="{% url 'store:cart_add' product.id %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" class="btn btn-primary btn-sm" aria-label="Add to cart">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+                      <path d="M3 6h18"></path>
+                      <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    <span>Add</span>
+                  </button>
+                </form>
+              {% else %}
+                <span class="stock-tag stock-out">Out of Stock</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h3>No Products Found</h3>
+      <p>Check back soon as new products are being added to our catalog.</p>
+    </div>
+  {% endif %}
+</section>
+
+<!-- Why Shop With Us -->
+<section style="background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 3rem 2rem; margin-bottom: 2rem;">
+  <div style="text-align: center; max-width: 600px; margin: 0 auto 2.5rem;">
+    <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem;">Why Choose Veylora?</h2>
+    <p style="color: var(--text-muted);">We are committed to delivering the best shopping experience from checkout to unboxing.</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; text-align: center;">
+    <div>
+      <div style="width: 3.5rem; height: 3.5rem; background: var(--primary-light); color: var(--primary); border-radius: 9999px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="3" width="15" height="13"></rect>
+          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+          <circle cx="5.5" cy="18.5" r="2.5"></circle>
+          <circle cx="18.5" cy="18.5" r="2.5"></circle>
+        </svg>
+      </div>
+      <h4 style="font-weight: 700; margin-bottom: 0.35rem;">Free Fast Shipping</h4>
+      <p style="font-size: 0.875rem; color: var(--text-muted);">Complimentary standard shipping on all orders over $100.</p>
+    </div>
+
+    <div>
+      <div style="width: 3.5rem; height: 3.5rem; background: var(--primary-light); color: var(--primary); border-radius: 9999px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+      </div>
+      <h4 style="font-weight: 700; margin-bottom: 0.35rem;">Secure Transactions</h4>
+      <p style="font-size: 0.875rem; color: var(--text-muted);">Encrypted server validation and reliable order snapshot processing.</p>
+    </div>
+
+    <div>
+      <div style="width: 3.5rem; height: 3.5rem; background: var(--primary-light); color: var(--primary); border-radius: 9999px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 14 14"></polyline>
+        </svg>
+      </div>
+      <h4 style="font-weight: 700; margin-bottom: 0.35rem;">24/7 Support</h4>
+      <p style="font-size: 0.875rem; color: var(--text-muted);">Our dedicated support specialists are always here to assist you.</p>
+    </div>
+
+    <div>
+      <div style="width: 3.5rem; height: 3.5rem; background: var(--primary-light); color: var(--primary); border-radius: 9999px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+      </div>
+      <h4 style="font-weight: 700; margin-bottom: 0.35rem;">Hassle-Free Returns</h4>
+      <p style="font-size: 0.875rem; color: var(--text-muted);">30-day money back guarantee with straightforward return process.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

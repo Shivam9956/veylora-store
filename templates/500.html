@@ -1,0 +1,16 @@
+{% extends 'store/base.html' %}
+
+{% block title %}500 — Server Error — Veylora{% endblock %}
+
+{% block content %}
+<div class="empty-state" style="padding: 5rem 1.5rem; max-width: 600px; margin: 3rem auto;">
+  <div style="font-size: 5rem; font-weight: 800; color: var(--danger); line-height: 1; margin-bottom: 1rem;">500</div>
+  <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.75rem;">Internal Server Error</h1>
+  <p style="color: var(--text-muted); margin-bottom: 2rem;">
+    Something unexpected happened on our server. Please try refreshing the page or check back in a few minutes.
+  </p>
+  <div style="display: flex; gap: 1rem; justify-content: center;">
+    <a href="{% url 'store:home' %}" class="btn btn-primary btn-md">Return Home</a>
+  </div>
+</div>
+{% endblock %}

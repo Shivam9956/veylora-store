@@ -1,0 +1,149 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}
+  {% if category %}{{ category.name }} — Veylora{% else %}All Products — Veylora{% endif %}
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800; letter-spacing: -0.02em;">
+        {% if category %}{{ category.name }}{% else %}All Products{% endif %}
+      </h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">
+        Showing {{ total_count }} product{{ total_count|pluralize }}
+        {% if search_query %} for keyword "<strong>{{ search_query }}</strong>"{% endif %}
+      </p>
+    </div>
+
+    <!-- Search & Sort Filter Form -->
+    <form method="get" action="{% if category %}{% url 'store:product_list_by_category' category.slug %}{% else %}{% url 'store:product_list' %}{% endif %}" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+      <div style="position: relative; min-width: 220px;">
+        <input type="text" name="q" value="{{ search_query }}" placeholder="Search products..." class="form-input" style="padding-left: 2.25rem;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+
+      <select name="sort" class="form-select" onchange="this.form.submit()" style="width: auto; min-width: 170px;">
+        <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Sort by: Newest</option>
+        <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+        <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+        <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>Name: A to Z</option>
+      </select>
+
+      <button type="submit" class="btn btn-secondary btn-sm">Search</button>
+      {% if search_query or category %}
+        <a href="{% url 'store:product_list' %}" class="btn btn-outline btn-sm">Reset</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Category Pills / Filter Chips -->
+  <div class="category-chips-bar">
+    <a href="{% url 'store:product_list' %}" class="btn {% if not category %}btn-primary{% else %}btn-secondary{% endif %} btn-sm" style="border-radius: 9999px; flex-shrink: 0;">
+      All Categories
+    </a>
+    {% for cat in categories %}
+      <a href="{% url 'store:product_list_by_category' cat.slug %}" class="btn {% if category and category.slug == cat.slug %}btn-primary{% else %}btn-secondary{% endif %} btn-sm" style="border-radius: 9999px; flex-shrink: 0;">
+        {{ cat.name }}
+      </a>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Products Grid -->
+{% if products %}
+  <div class="products-grid">
+    {% for product in products %}
+      <div class="product-card">
+        <div class="product-image-wrap">
+          {% if product.has_discount %}
+            <span class="product-badge">-{{ product.discount_percent }}% OFF</span>
+          {% endif %}
+          
+          <a href="{% url 'store:product_detail' product.slug %}" style="width: 100%; height: 100%; display: block;">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" loading="lazy">
+            {% else %}
+              <div class="product-placeholder-img">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>{{ product.name|truncatechars:20 }}</span>
+              </div>
+            {% endif %}
+          </a>
+        </div>
+
+        <div class="product-body">
+          <span class="product-category-tag">{{ product.category.name }}</span>
+          <h3 class="product-title">
+            <a href="{% url 'store:product_detail' product.slug %}">{{ product.name }}</a>
+          </h3>
+          <p class="product-desc">{{ product.description|truncatewords:12 }}</p>
+
+          <div class="product-footer">
+            <div class="price-wrap">
+              <span class="price-current">${{ product.price }}</span>
+              {% if product.old_price %}
+                <span class="price-old">${{ product.old_price }}</span>
+              {% endif %}
+            </div>
+
+            {% if product.is_in_stock %}
+              <form method="post" action="{% url 'store:cart_add' product.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn btn-primary btn-sm" aria-label="Add to cart">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+                    <path d="M3 6h18"></path>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                  </svg>
+                  <span>Add</span>
+                </button>
+              </form>
+            {% else %}
+              <span class="stock-tag stock-out">Out of Stock</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination Controls -->
+  {% if products.has_other_pages %}
+    <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 3rem;">
+      {% if products.has_previous %}
+        <a href="?page={{ products.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="btn btn-secondary btn-sm">&larr; Previous</a>
+      {% endif %}
+
+      <span style="display: inline-flex; align-items: center; padding: 0.4rem 1rem; font-size: 0.9rem; font-weight: 600; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+        Page {{ products.number }} of {{ products.paginator.num_pages }}
+      </span>
+
+      {% if products.has_next %}
+        <a href="?page={{ products.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="btn btn-secondary btn-sm">Next &rarr;</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+{% else %}
+  <div class="empty-state">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <h3>No Products Found</h3>
+    <p>We couldn't find any products matching your search criteria. Try a different query or reset your filters.</p>
+    <a href="{% url 'store:product_list' %}" class="btn btn-primary btn-sm">View All Products</a>
+  </div>
+{% endif %}
+{% endblock %}
