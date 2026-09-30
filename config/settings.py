@@ -21,12 +21,17 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-ecom-dev-key-9956-devspher
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 't', 'yes')
 
-ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com,.pythonanywhere.com,localhost').split(',') if h.strip()]
-if '*' in ALLOWED_HOSTS:
-    ALLOWED_HOSTS = ['veylora-store.onrender.com']
+ALLOWED_HOSTS = ['*']
 
-csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://*.onrender.com,https://*.pythonanywhere.com,http://127.0.0.1:8000,http://localhost:8000')
-CSRF_TRUSTED_ORIGINS = [c.strip() for c in csrf_origins.split(',') if c.strip()]
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'https://*.pythonanywhere.com',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'http://127.0.0.1',
+    'http://localhost',
+]
+
 
 
 # Application definition
@@ -122,6 +127,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = []
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# WhiteNoise settings
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = True
 
 # WhiteNoise production static file compression and caching
 STORAGES = {
