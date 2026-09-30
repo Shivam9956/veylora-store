@@ -45,6 +45,26 @@ class CustomerLoginForm(AuthenticationForm):
         widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'form-input'})
     )
 
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if username and password:
+            # Allow logging in with email address as well
+            if '@' in username:
+                user_obj = User.objects.filter(email__iexact=username).first()
+                if user_obj:
+                    username = user_obj.username
+                    self.cleaned_data['username'] = username
+
+            self.user_cache = authenticate(self.request, username=username, password=password)
+            if self.user_cache is None:
+                raise self.get_invalid_login_error()
+            else:
+                self.confirm_login_allowed(self.user_cache)
+
+        return self.cleaned_data
+
 
 class CheckoutForm(forms.ModelForm):
     order_notes = forms.CharField(
