@@ -132,4 +132,21 @@ class Command(BaseCommand):
             status_text = 'Created' if created else 'Updated'
             self.stdout.write(f"Product: {prod.name} - ${prod.price} ({status_text})")
 
-        self.stdout.write(self.style.SUCCESS('Successfully seeded sample categories and products!'))
+        # Create or update default Superuser for Admin dashboard
+        from django.contrib.auth.models import User
+        admin_user, admin_created = User.objects.get_or_create(
+            username='admin',
+            defaults={
+                'email': 'admin@example.com',
+                'is_staff': True,
+                'is_superuser': True,
+            }
+        )
+        admin_user.set_password('admin123')
+        admin_user.is_staff = True
+        admin_user.is_superuser = True
+        admin_user.save()
+        admin_status = 'Created' if admin_created else 'Password synchronized'
+        self.stdout.write(f"Superuser 'admin' ({admin_status}) - login with 'admin' / 'admin123'")
+
+        self.stdout.write(self.style.SUCCESS('Successfully seeded sample categories, products, and admin superuser!'))
