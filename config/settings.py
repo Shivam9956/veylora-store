@@ -21,7 +21,12 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-ecom-dev-key-9956-devspher
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 't', 'yes')
 
-ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if h.strip()]
+ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com,.pythonanywhere.com,localhost').split(',') if h.strip()]
+if '*' in ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['*']
+
+csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://*.onrender.com,https://*.pythonanywhere.com,http://127.0.0.1:8000,http://localhost:8000')
+CSRF_TRUSTED_ORIGINS = [c.strip() for c in csrf_origins.split(',') if c.strip()]
 
 
 # Application definition
@@ -39,6 +44,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -114,10 +120,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'store' / 'static',
-]
+STATICFILES_DIRS = []
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# WhiteNoise production static file compression and caching
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 # Media files (User-uploaded content like product images)
 MEDIA_URL = '/media/'
