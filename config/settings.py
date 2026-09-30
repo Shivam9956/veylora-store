@@ -23,7 +23,7 @@ DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 't', 'yes')
 
 ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com,.pythonanywhere.com,localhost').split(',') if h.strip()]
 if '*' in ALLOWED_HOSTS:
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = ['https://veylora-store.onrender.com']
 
 csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://*.onrender.com,https://*.pythonanywhere.com,http://127.0.0.1:8000,http://localhost:8000')
 CSRF_TRUSTED_ORIGINS = [c.strip() for c in csrf_origins.split(',') if c.strip()]
