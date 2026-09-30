@@ -24,9 +24,14 @@ def home_view(request):
     Home page view displaying hero banner, featured categories,
     and trending/featured products.
     """
-    categories = Category.objects.all()[:6]
-    featured_products = Product.objects.filter(is_active=True).order_by('-created_at')[:8]
-    latest_products = Product.objects.filter(is_active=True).order_by('-created_at')[8:16]
+    try:
+        categories = list(Category.objects.all()[:6])
+        featured_products = list(Product.objects.filter(is_active=True).order_by('-created_at')[:8])
+        latest_products = list(Product.objects.filter(is_active=True).order_by('-created_at')[8:16])
+    except Exception:
+        categories = []
+        featured_products = []
+        latest_products = []
 
     context = {
         'categories': categories,
