@@ -66,8 +66,8 @@
           {% endif %}
           
           <a href="{% url 'store:product_detail' product.slug %}" style="width: 100%; height: 100%; display: block;">
-            {% if product.image %}
-              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" loading="lazy">
+            {% if product.image_url_display %}
+              <img src="{{ product.image_url_display }}" alt="{{ product.name }}" class="product-image" loading="lazy">
             {% else %}
               <div class="product-placeholder-img">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">

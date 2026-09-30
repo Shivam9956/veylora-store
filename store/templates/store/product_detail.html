@@ -16,8 +16,8 @@
 <div class="product-detail-layout">
   <!-- Left: Image Gallery -->
   <div class="product-detail-gallery">
-    {% if product.image %}
-      <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height: 480px; width: 100%; object-fit: contain;">
+    {% if product.image_url_display %}
+      <img src="{{ product.image_url_display }}" alt="{{ product.name }}" style="max-height: 480px; width: 100%; object-fit: contain;">
     {% else %}
       <div class="product-placeholder-img" style="height: 380px;">
         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
@@ -130,8 +130,8 @@
             <span class="product-badge">-{{ related.discount_percent }}% OFF</span>
           {% endif %}
           <a href="{% url 'store:product_detail' related.slug %}" style="width: 100%; height: 100%; display: block;">
-            {% if related.image %}
-              <img src="{{ related.image.url }}" alt="{{ related.name }}" class="product-image" loading="lazy">
+            {% if related.image_url_display %}
+              <img src="{{ related.image_url_display }}" alt="{{ related.name }}" class="product-image" loading="lazy">
             {% else %}
               <div class="product-placeholder-img">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">

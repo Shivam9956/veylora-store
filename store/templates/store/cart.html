@@ -25,8 +25,8 @@
             <tr>
               <td>
                 <div class="cart-item-product">
-                  {% if item.product.image %}
-                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-thumb">
+                  {% if item.product.image_url_display %}
+                    <img src="{{ item.product.image_url_display }}" alt="{{ item.product.name }}" class="cart-item-thumb">
                   {% else %}
                     <div class="cart-item-thumb" style="display: flex; align-items: center; justify-content: center; color: var(--text-light);">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

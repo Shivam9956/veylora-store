@@ -47,6 +47,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     old_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     image = models.ImageField(upload_to='products/', blank=True, null=True)
+    image_url = models.URLField(max_length=500, blank=True, null=True, help_text='External image URL (e.g. Unsplash or CDN)')
     stock = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -88,6 +89,17 @@ class Product(models.Model):
             discount = ((self.old_price - self.price) / self.old_price) * Decimal('100')
             return int(round(discount))
         return 0
+
+    @property
+    def image_url_display(self):
+        if self.image:
+            try:
+                return self.image.url
+            except Exception:
+                pass
+        if self.image_url:
+            return self.image_url
+        return None
 
 
 class Order(models.Model):

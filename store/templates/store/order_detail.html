@@ -35,8 +35,8 @@
           <tr>
             <td>
               <div class="cart-item-product">
-                {% if item.product and item.product.image %}
-                  <img src="{{ item.product.image.url }}" alt="{{ item.product_name_snapshot }}" class="cart-item-thumb">
+                {% if item.product and item.product.image_url_display %}
+                  <img src="{{ item.product.image_url_display }}" alt="{{ item.product_name_snapshot }}" class="cart-item-thumb">
                 {% else %}
                   <div class="cart-item-thumb" style="display: flex; align-items: center; justify-content: center; color: var(--text-light); font-size: 0.75rem;">
                     ITEM
